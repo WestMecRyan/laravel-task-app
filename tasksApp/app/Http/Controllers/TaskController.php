@@ -10,11 +10,11 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Task::all();
+        $tasks = $query->get();
 
-        return view('tasks.index', compact('tasks'));
+        return view('tasks.index', compact('tasks', 'search', 'sort'));
     }
 
     /**
@@ -57,7 +57,9 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $task = Task::findOrFail($id);
+
+        return view('tasks.edit', compact('task'));
     }
 
     /**
@@ -65,7 +67,20 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+           'task_name' => 'required|string|max:255',
+           'task_location' => 'nullable|string|max:255',
+           'time_complexity' => 'required|integer|min:1|max:255',
+           'materials_required' => 'nullable|string',
+           'deadline' => 'nullable|date',
+           'priority' => 'nullable|integer|min:1|max:3',
+           'category' => 'nullable|string|max:255',
+        ]);
+
+        $task = Task::findOrFail($id);
+        $task->update($validated);
+
+        return redirect()->route('tasks.index')->with('success', 'Task updated successfully!');
     }
 
     /**
@@ -73,6 +88,9 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $task = Task::findOrFail($id);
+        $task->delete();
+
+        return redirect()->route('tasks.index')->with('success', 'Task deleted successfully!');
     }
 }
