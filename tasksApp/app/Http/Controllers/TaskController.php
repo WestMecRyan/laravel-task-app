@@ -12,6 +12,33 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
+        $search = $request->input('search');
+        $sort = $request->input('sort');
+
+        $query = Task::query();
+
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('task_name', 'like', '%'.$search.'%')
+                ->orWhere('task_location', 'like', '%'.$search.'%')
+                ->orWhere('category', 'like', '%'.$search.'%')
+                ->orWhere('materials_required', 'like', '%'.$search.'%');
+            });
+        }
+
+        switch ($sort) {
+            case 'deadline':
+                $query->orderBy('deadline', 'asc');
+                break;
+            case 'task_name':
+                $query->orderBy('task_name', 'asc');
+                break;
+            case 'category':
+                $query->orderBy('category', 'asc');
+                break;
+            default:
+                $query->orderBy('task_name', 'asc');
+        }
         $tasks = $query->get();
 
         return view('tasks.index', compact('tasks', 'search', 'sort'));
