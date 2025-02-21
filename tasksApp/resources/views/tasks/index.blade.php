@@ -33,7 +33,7 @@
 
     <ul>
         @forelse($tasks as $task)
-            <li class="mb-2">
+            <li class="mb-2 {{ $task->task_name === 'b' ? 'text-red-600' : ($task->priority === 2 ? 'text-yellow-600' : 'text-green-600') }}">
                 {{ $task->task_name }}
             <!-- Link to the show page -->
                 <a href="{{ route('tasks.show', $task->id) }}" class="text-blue-500 underline ml-2">
